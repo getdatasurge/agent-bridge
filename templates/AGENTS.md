@@ -31,12 +31,18 @@ in parallel. Before addressing my actual prompt, run this gate:
    and evolve, or (c) skip tracking this session. Wait for my answer.
 
 4. Once PRD.md + PROGRESS.md exist: pick a task from PRD.md whose
-   files/PRD-row aren't claimed by any open PR. Push a WIP commit and
-   open a draft PR within your first few minutes — that's your claim.
-   Multiple in-flight claims per agent are fine (one PR per task).
+   files/PRD-row aren't claimed by any open PR. **Branch first** —
+   `git checkout -b <agent>/<task-slug>` — then push a WIP commit and
+   open a draft PR within your first few minutes. Multiple in-flight
+   claims per agent are fine (one PR per task). Never commit to main.
 
 5. Every commit updates the matching PRD.md row (status/evidence) AND
    appends one entry to PROGRESS.md, in the same commit as the code.
+
+6. Finish by merging your branch into main, resolving any conflicts in
+   the merge commit. Shared files (especially PROGRESS.md) WILL
+   conflict when parallel sessions touched them — keep all entries
+   from both sides.
 ```
 
 ---
@@ -134,11 +140,19 @@ you in a fresh session — should find it from the PRD.
 
 ## Branch + PR rules
 
-- Develop on an agent-prefixed branch (`claude/<slug>`, `codex/<slug>`,
-  etc.). Never push directly to `main`.
-- Push with `git push -u origin <branch>`. After pushing, open a **draft
-  PR** if one doesn't exist — this is how other agents see your claim.
-- Never force-push to `main`. Never skip hooks. Never commit secrets / `.env*`.
+- **Branch first; never commit to `main`.** Before any code change, run
+  `git checkout -b <agent>/<slug>` (e.g. `claude/auth-cleanup`,
+  `codex/perf-fix`). Push with `git push -u origin <branch>` and open
+  a **draft PR** if one doesn't exist — this is how other agents see
+  your claim.
+- **Finish by merging the branch into `main` with conflicts resolved
+  in the merge commit.** Parallel sessions touching shared files
+  (especially `PROGRESS.md`) WILL conflict at merge time — that's
+  expected, and `PROGRESS.md` has a `.gitattributes` union-merge rule
+  that auto-resolves the common case. For everything else, keep both
+  sides' content where possible and re-sort/reconcile by hand. Never
+  push --force to `main`.
+- Never skip hooks. Never commit secrets / `.env*`.
 
 ## Tests + checks before pushing
 

@@ -249,7 +249,27 @@ turns off the convention going forward.
 
 ---
 
-## Known limits (and when to upgrade)
+## Parallel-session workflow (the discipline)
+
+The protocol assumes every agent session does this:
+
+1. **Branch first** — `git checkout -b <agent>/<task-slug>`. Never
+   commit to `main` directly. The primer + `AGENTS.md` reinforce this.
+2. **Push a WIP commit + open a draft PR within minutes.** That's how
+   other parallel sessions see your claim and pick around it.
+3. **Every commit updates `PRD.md` row + appends a `PROGRESS.md`
+   entry** in the same commit as the code.
+4. **Merge to `main` at the end with conflicts resolved in the merge
+   commit.** Shared files (especially `PROGRESS.md`) will conflict —
+   that's expected. `PROGRESS.md` has a `.gitattributes` union-merge
+   rule that auto-resolves the common case (both sides' lines kept).
+   Re-sort by date afterward if the ordering matters to you.
+
+If sessions skip step 1 (commit directly to `main`) or skip step 2
+(no draft PR), the system can't coordinate — that's where painful
+conflicts come from.
+
+## Known limits
 
 This toolkit gives you **eventual sync** (agents see each other when they
 next list PRs) and **soft locks** (convention + git merge resolution).
@@ -257,9 +277,11 @@ Three failure modes to watch:
 
 1. **An agent skips the "list PRs first" step.** The primer + AGENTS.md
    tell it to; you'll want to spot-check the first few sessions.
-2. **`PROGRESS.md` merge conflicts** when two agents append simultaneously.
-   Trivially resolvable; if it bites often, switch to per-entry files
-   (`progress/YYYY-MM-DD-agent-slug.md`) instead of one shared file.
+2. **`PROGRESS.md` ordering after auto-union merge.** Union merge keeps
+   all entries but may scramble the "newest on top" property when two
+   branches both prepended. Easy manual re-sort. If the ordering keeps
+   biting, switch to per-entry files (P1-3 in `PRD.md`:
+   `progress/YYYY-MM-DD-agent-slug.md`) instead of one shared file.
 3. **PR drift** — draft PR sits stale and locks the queue. Suggested
    rule: anything draft >48h gets closed by you or converted to comment.
 

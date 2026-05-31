@@ -70,11 +70,15 @@ process.stdout.write(JSON.stringify({
       "",
       "Once PRD.md and PROGRESS.md exist, the rest of the protocol applies:",
       "",
-      "5. Every change updates the matching PRD.md row (status/evidence) AND appends a PROGRESS.md entry — in the same commit as the code. Push a WIP commit + open a draft PR within minutes of starting work so other agents see the claim.",
+      "5. **Branch first; never commit to main.** Before any code change, run `git checkout -b <agent>/<task-slug>` (e.g. `claude/auth-cleanup`). Push a WIP commit + open a draft PR within minutes — that's how parallel sessions see your claim and avoid the same task.",
       "",
-      "6. Possession is per-TASK, not per-agent. You can hold multiple in-flight draft PRs at once — one per task. \"First open PR on a given file/row wins\" prevents collisions; multiple unrelated PRs from one agent is fine.",
+      "6. **Every commit updates PRD.md AND PROGRESS.md** in the same commit as the code. Status badge, evidence pointer (file:line), one PROGRESS entry on top. No exceptions.",
       "",
-      "Skipping the gate risks two agents working on the same task and losing the historical record. Don't skip."
+      "7. **Finish by merging your branch into main, resolving all conflicts in the merge commit.** Parallel sessions touching shared files (especially PROGRESS.md) WILL conflict at merge time — that's expected. Keep ALL PROGRESS.md entries from both sides (newest-on-top by date) and reconcile other shared docs carefully. Never push --force to main. A `.gitattributes` rule auto-unions PROGRESS.md so the common case resolves itself; re-sort if needed.",
+      "",
+      "8. **Possession is per-TASK, not per-agent.** One open draft PR per task; multiple in-flight from the same agent is fine. \"First open PR on a given file/row wins\" — if you see another agent's open PR touching your intended files, pick adjacent work.",
+      "",
+      "Skipping the gate or committing directly to main risks two agents on the same task, push races, and a lost historical record. Don't skip."
     ].join("\n")
   }
 }));

@@ -22,6 +22,13 @@ belongs in the commit message or PR body.
 
 <!-- New entries go here, above this line. Newest on top. -->
 
+## 2026-05-31 — Branch-first protocol + .gitattributes union-merge on PROGRESS.md
+- **agent:** Claude (Claude Code, claude-opus-4-7)
+- **branch:** claude/funny-franklin-vxu5W    commit: pending
+- **PRD touchpoints:** P0-10 (new, ✅), P1-3 (❌ → ⚠️ partial), OQ-7 (new, open)
+- **summary:** Multiple parallel Claude terminal sessions kept conflicting on PROGRESS.md and README.md. Primer / AGENTS / Codex paste-in now make "branch first, merge with conflict resolution at the end" a hard rule, and a `.gitattributes` union-merge entry auto-resolves the common PROGRESS.md case. P1-3 (per-entry progress/) stays open in case union-merge ordering proves insufficient.
+- **files:** hooks/session-start-primer.js, prompts/codex-primer.txt, templates/AGENTS.md, .gitattributes, README.md, PRD.md
+
 ## 2026-05-31 — init-project drops per-repo hook + cloud-setup.sh env bootstrap
 - **agent:** Claude (Claude Code, claude-opus-4-7)
 - **branch:** claude/funny-franklin-vxu5W    commit: pending
