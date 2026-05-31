@@ -1,0 +1,8 @@
+# Auto-resolve PROGRESS.md merge conflicts by taking the union of both
+# sides' lines. Multiple agents append to PROGRESS.md in parallel and
+# it's an append-only ledger — concatenation is the right semantic.
+#
+# Tradeoff: the "newest on top" ordering can get scrambled if two
+# branches both added entries at the head. Manual re-sort after merge
+# is fine; nothing is ever lost.
+PROGRESS.md merge=union

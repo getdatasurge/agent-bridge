@@ -111,11 +111,17 @@ real-time.
 - **Gap to close:** Add `.github/workflows/smoke.yml`.
 - **Open:** —
 
-### P1-3 — Per-entry `PROGRESS/` directory option ❌ Not started
+### P1-3 — Per-entry `PROGRESS/` directory option ⚠️ Partial
 - **Acceptance:** `init-project.sh` accepts a `--mode=per-entry` flag that creates `progress/` with a README instead of a single `PROGRESS.md`. README documents the merge-conflict tradeoff.
-- **Evidence:** —
-- **Gap to close:** Script flag + template variant.
-- **Open:** —
+- **Evidence:** Mitigated for now by `.gitattributes` union-merge on `PROGRESS.md` so the common conflict case auto-resolves. Per-entry mode still not implemented.
+- **Gap to close:** Script flag + template variant + migration helper.
+- **Open:** OQ-7 — does union-merge + manual re-sort cover enough cases that we can defer P1-3 indefinitely?
+
+### P0-10 — Branch-first + merge-with-resolution protocol ✅ Done
+- **Acceptance:** Primer (Claude SessionStart, Codex paste-in, AGENTS.md inline snippet) explicitly tells every agent: (i) branch off main before any commit, (ii) push WIP + draft PR within minutes, (iii) merge to main resolving conflicts in the merge commit. Plus `.gitattributes` auto-unions `PROGRESS.md` so the common conflict case is mechanical, not manual.
+- **Evidence:** `hooks/session-start-primer.js:71-79`, `prompts/codex-primer.txt:54-71`, `templates/AGENTS.md` (inline primer + Branch+PR rules section), `.gitattributes:6`, `README.md` parallel-session-workflow section.
+- **Gap to close:** —
+- **Open:** OQ-7 (see above).
 
 ---
 
@@ -136,6 +142,7 @@ real-time.
 | OQ-1 | Should we enforce PRD/PROGRESS updates with a pre-commit hook in the templates, or stay convention-only? | — | No | Open |
 | OQ-2 | What's the right "is this a code project?" detector in the SessionStart primer? Currently a list of manifest filenames in the primer prose; could be a real check. | — | No | Open |
 | OQ-3 | Should `init-project.sh` also drop a stub `.github/PULL_REQUEST_TEMPLATE.md` enforcing "Touches PRD rows:" / "Status:" fields? | — | No | Open |
+| OQ-7 | Does `.gitattributes` union-merge on `PROGRESS.md` + manual re-sort cover enough cases that P1-3 (per-entry `progress/` directory) can be deferred indefinitely, or do we still want per-entry mode soon? | — | No | Open |
 | OQ-4 | The "is code project?" detector in the primer is a hard-coded manifest list. Bazel monorepos, raw-C projects, and polyglot repos may fail it. Worth promoting from heuristic to explicit user opt-in/opt-out? | — | No | Open |
 | OQ-5 | Should the primer's "N commits behind upstream" lag check trigger a `git fetch` itself (adds ~100ms per session) or rely on local tracking refs (current — only accurate if the user ran `git fetch` / `update.sh` recently)? | — | No | Open |
 | OQ-6 | For the per-project dropped hook (`init-project.sh` output): snapshot primer JSON at init time (current, refresh via `update-project.sh`) vs `curl` a canonical URL each session (always current, but network dependency + offline failure mode)? | — | No | Open |

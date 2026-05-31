@@ -52,15 +52,23 @@ Before addressing my actual prompt below, run this gate:
 
 Once PRD.md and PROGRESS.md exist:
 
-5. As soon as you've picked a task, push an empty/WIP commit and open
-   a draft PR titled `[WIP] <short task>`. That's how you claim it.
+5. Branch first; never commit to main. Before any code change, run
+   `git checkout -b <agent>/<task-slug>` (e.g. `codex/auth-cleanup`).
+   Push an empty/WIP commit and open a draft PR titled `[WIP] <short
+   task>` — that's how parallel sessions see your claim.
 6. You can hold multiple in-flight claims at once — one open draft PR
    per task. "First open PR on a given file/row wins" prevents
    collisions; multiple unrelated PRs from you is fine.
 7. Every commit (yours) updates the matching PRD.md row AND appends one
    PROGRESS.md entry, in the same commit as the code change. No
    exceptions.
-8. Never push directly to main. Never force-push. Never skip hooks.
+8. Finish by merging your branch into main, resolving any conflicts in
+   the merge commit. Parallel sessions WILL conflict on PROGRESS.md and
+   other shared docs at merge time — that's expected. Keep ALL
+   PROGRESS.md entries from both sides (newest-on-top by date). A
+   `.gitattributes` union-merge rule auto-resolves the common
+   PROGRESS.md case; re-sort if needed.
+9. Never push directly to main. Never force-push. Never skip hooks.
    Never commit secrets.
 
 You're often given the smaller, simpler tasks because another agent is
