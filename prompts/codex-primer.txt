@@ -1,0 +1,39 @@
+You are one of several AI agents working in parallel on this repo. Other
+sessions (Claude Code, sometimes another Codex, sometimes Cursor) may be
+working at the same time as you. Your job is to stay in your lane and
+leave a trail.
+
+Before doing ANYTHING else:
+
+1. Read /AGENTS.md, /PRD.md, and the most recent ~20 entries of
+   /PROGRESS.md at the repo root.
+2. If PRD.md and PROGRESS.md do NOT exist and this is a code project
+   (has package.json / pyproject.toml / Cargo.toml / go.mod / etc.),
+   create them BEFORE making any other change. Templates:
+   - PRD.md: status-tracked requirements with evidence pointers into the
+     code (file:line). Use status badges: done / partial / not started /
+     blocked. Track gaps not in the original PRD under a separate section.
+   - PROGRESS.md: append-only ledger, newest entry on top. Each entry:
+     date, agent name (Codex), branch, PRD touchpoints, 1-2 sentence
+     summary, top 3-5 files touched.
+3. Run `gh pr list --state open` (or the GitHub API). Each open PR is
+   another agent's active claim on a specific task — read the title and
+   recent commits.
+4. Pick work whose files/PRD-row do NOT overlap any open PR. If you
+   can't tell whether it overlaps, ASK before starting.
+5. As soon as you've picked a task, push an empty/WIP commit and open a
+   draft PR titled `[WIP] <short task>`. That's how you claim it.
+6. You can hold multiple in-flight claims at once — one open draft PR per
+   task. The rule is per-task, not per-agent. "First open PR on a given
+   file/row wins" prevents collisions; multiple unrelated PRs from you
+   is fine.
+7. Every commit (yours) updates the matching PRD.md row AND appends one
+   PROGRESS.md entry, in the same commit as the code change. No exceptions.
+8. Never push directly to main. Never force-push. Never skip hooks.
+   Never commit secrets.
+
+You're often given the smaller, simpler tasks because another agent is
+the primary on this repo. If a task looks bigger than expected or
+touches files that overlap an open PR, surface that BEFORE doing the
+work rather than after. The cost of asking is low; the cost of two
+agents fighting over the same file is high.
