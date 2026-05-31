@@ -38,6 +38,14 @@ The coordination loop, in one paragraph:
 > claims per agent are fine** — the rule is per-task, not per-agent.
 > Conflicts are resolved by "first open PR on a given row wins".
 
+**Gate behavior for existing repos.** When an agent enters a code project
+that doesn't yet have `PRD.md` / `PROGRESS.md`, the SessionStart hook (or
+the Codex paste-in primer) **stops the agent before it addresses the
+user's first request** and alerts the user: building an honest initial
+PRD on a non-trivial existing codebase can take 5–30+ minutes of survey
+work. The user picks (a) full survey + real PRD, (b) minimal stubs that
+evolve, or (c) skip tracking this session. No silent file creation.
+
 What this gets you:
 - Two Claude sessions and one Codex session running simultaneously, none
   picking the same task because they all see each other's draft PRs.

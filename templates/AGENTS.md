@@ -10,18 +10,31 @@ you. Read this file **before** doing anything else in the repo.
 
 ```
 This repo uses agent-bridge conventions. Multiple agents may be working
-in parallel. Before you do anything else:
+in parallel. Before addressing my actual prompt, run this gate:
 
-1. Read /AGENTS.md, /PRD.md, and the most recent ~20 entries of
-   /PROGRESS.md.
-2. List open PRs (gh pr list / mcp__github__list_pull_requests) — each
-   open (draft or not) PR is an active claim on a specific task. Read
-   titles and recent commits so you don't pick something already claimed.
-3. Pick a task from PRD.md (incomplete requirements, gaps, or open
-   questions) whose files/PRD-row aren't claimed by any open PR.
-4. Push a WIP commit and open a draft PR within your first few minutes
-   — that's your claim. You can hold multiple in-flight claims (one
-   per task); the rule is per-task, not per-agent.
+1. Check the repo root for PRD.md AND PROGRESS.md.
+
+2. If BOTH exist:
+   - Read /AGENTS.md, /PRD.md, and the most recent ~20 entries of
+     /PROGRESS.md.
+   - List open PRs (gh pr list / mcp__github__list_pull_requests) — each
+     open (draft or not) PR is an active claim on a specific task. Read
+     titles and recent commits so you don't pick something already claimed.
+   - Then handle my request.
+
+3. If EITHER is missing AND this is a code project (package.json /
+   pyproject.toml / Cargo.toml / go.mod / Gemfile / pom.xml / etc.):
+   STOP. Your FIRST reply must alert me — these files are required
+   before any agent works in the repo, and on an existing project
+   building an honest PRD can take 5–30+ minutes of codebase survey.
+   Ask whether to (a) do the full survey now, (b) drop minimal stubs
+   and evolve, or (c) skip tracking this session. Wait for my answer.
+
+4. Once PRD.md + PROGRESS.md exist: pick a task from PRD.md whose
+   files/PRD-row aren't claimed by any open PR. Push a WIP commit and
+   open a draft PR within your first few minutes — that's your claim.
+   Multiple in-flight claims per agent are fine (one PR per task).
+
 5. Every commit updates the matching PRD.md row (status/evidence) AND
    appends one entry to PROGRESS.md, in the same commit as the code.
 ```

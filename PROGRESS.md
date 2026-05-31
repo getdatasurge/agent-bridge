@@ -22,6 +22,13 @@ belongs in the commit message or PR body.
 
 <!-- New entries go here, above this line. Newest on top. -->
 
+## 2026-05-31 — Pre-prompt gate for missing PRD/PROGRESS in existing repos
+- **agent:** Claude (Claude Code, claude-opus-4-7)
+- **branch:** claude/funny-franklin-vxu5W    commit: pending
+- **PRD touchpoints:** P0-7 (new, ✅), OQ-4 (new, open)
+- **summary:** SessionStart primer + Codex paste-in + AGENTS.md template primer no longer silently auto-create tracking files in existing code projects. They now stop the agent before it processes the user's first message, alert with the 5–30 min PRD-survey caveat, and offer survey / stub / skip options. README documents the gate.
+- **files:** hooks/session-start-primer.js, prompts/codex-primer.txt, templates/AGENTS.md, README.md, PRD.md
+
 ## 2026-05-31 — Dogfood: add root-level PRD.md + PROGRESS.md
 - **agent:** Claude (Claude Code, claude-opus-4-7)
 - **branch:** claude/funny-franklin-vxu5W    commit: pending

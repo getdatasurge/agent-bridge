@@ -77,6 +77,12 @@ real-time.
 - **Gap to close:** Future commits must update both in the same commit. No CI enforcement yet.
 - **Open:** Should there be a pre-commit hook that fails if `PROGRESS.md` wasn't touched? (see OQ-1)
 
+### P0-7 — Pre-prompt gate for missing tracking files ✅ Done
+- **Acceptance:** When an agent enters a code project (detected by manifest files) lacking `PRD.md` / `PROGRESS.md`, the SessionStart primer (Claude) and paste-in primer (Codex/Cursor) stop the agent BEFORE it addresses the user's first message, alert the user with the time-cost caveat for existing projects, and offer (a) full survey, (b) minimal stubs, (c) skip-this-session. No silent file creation.
+- **Evidence:** `hooks/session-start-primer.js:19-32`, `prompts/codex-primer.txt:7-37`, `templates/AGENTS.md` primer snippet.
+- **Gap to close:** —
+- **Open:** OQ-4 — the manifest list is heuristic; some projects (Bazel monorepos, raw C, polyglot) won't match. Acceptable tradeoff for now.
+
 ---
 
 ## 5. Requirements — P1 (Should-Have)
@@ -118,6 +124,7 @@ real-time.
 | OQ-1 | Should we enforce PRD/PROGRESS updates with a pre-commit hook in the templates, or stay convention-only? | — | No | Open |
 | OQ-2 | What's the right "is this a code project?" detector in the SessionStart primer? Currently a list of manifest filenames in the primer prose; could be a real check. | — | No | Open |
 | OQ-3 | Should `init-project.sh` also drop a stub `.github/PULL_REQUEST_TEMPLATE.md` enforcing "Touches PRD rows:" / "Status:" fields? | — | No | Open |
+| OQ-4 | The "is code project?" detector in the primer is a hard-coded manifest list. Bazel monorepos, raw-C projects, and polyglot repos may fail it. Worth promoting from heuristic to explicit user opt-in/opt-out? | — | No | Open |
 
 ---
 
