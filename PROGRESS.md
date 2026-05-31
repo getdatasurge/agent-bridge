@@ -22,6 +22,20 @@ belongs in the commit message or PR body.
 
 <!-- New entries go here, above this line. Newest on top. -->
 
+## 2026-05-31 — init-project drops per-repo hook + cloud-setup.sh env bootstrap
+- **agent:** Claude (Claude Code, claude-opus-4-7)
+- **branch:** claude/funny-franklin-vxu5W    commit: pending
+- **PRD touchpoints:** P0-9 (moved Partial → ✅), OQ-6 (new, open)
+- **summary:** `init-project.sh` now also drops `.claude/hooks/session-start.sh` (self-contained — primer JSON snapshotted inline) and `.claude/settings.json` (merged into any existing one via jq). `cloud-setup.sh` bootstraps a cloud Claude Code environment: paste the one-line curl into the env setup script field; every container clones/pulls agent-bridge from GitHub + runs install.sh = always-latest with zero per-session thinking. README rewritten with three composable install paths (A: local, B: cloud env, C: per-repo). Tested end-to-end: fresh creation, idempotent re-run, merge into pre-existing settings.json with unrelated hooks.
+- **files:** init-project.sh, cloud-setup.sh, README.md, PRD.md, PROGRESS.md
+
+## 2026-05-31 — Self-hook: agent-bridge gets its own .claude/hooks/session-start.sh
+- **agent:** Claude (Claude Code, claude-opus-4-7)
+- **branch:** claude/funny-franklin-vxu5W    commit: f5e3dc0
+- **PRD touchpoints:** P0-9 (new, partial — still need init-project.sh changes + cloud-setup.sh)
+- **summary:** agent-bridge now carries `.claude/hooks/session-start.sh` + `.claude/settings.json` so working on this very repo in Claude Code (cloud or local) fires the bundled primer at session start, regardless of user-level install. `.gitignore` excludes `.claude/settings.local.json` (harness-managed). First of two layers — second (per-init'd-project hooks + cloud env bootstrap) pending design confirmation with the user.
+- **files:** .claude/hooks/session-start.sh, .claude/settings.json, .gitignore, PROGRESS.md, PRD.md
+
 ## 2026-05-31 — Update propagation: symlink install + update.sh + canonical Codex URL + update-project.sh
 - **agent:** Claude (Claude Code, claude-opus-4-7)
 - **branch:** claude/funny-franklin-vxu5W    commit: pending

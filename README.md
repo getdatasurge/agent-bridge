@@ -56,13 +56,18 @@ What this gets you:
 
 ---
 
-## Install — per machine (one-time, for Claude Code)
+## Install paths (pick the one matching your setup)
 
-This adds a SessionStart hook to your user-level Claude Code settings so
+agent-bridge runs in three places. They compose — you can use one,
+two, or all three.
+
+### A. Local workstation — `install.sh` (one-time per machine)
+
+Adds a SessionStart hook to your user-level Claude Code settings so
 every new session in any repo auto-runs the primer.
 
 ```bash
-git clone <this-repo-url> ~/agent-bridge
+git clone https://github.com/getdatasurge/agent-bridge ~/agent-bridge
 cd ~/agent-bridge
 ./install.sh
 ```
@@ -74,12 +79,48 @@ What `install.sh` does:
 2. Merges the SessionStart hook entry into `~/.claude/settings.json`
    (backing up the original to `~/.claude/settings.json.bak.<timestamp>`).
 
-After install, open `/hooks` once in any Claude Code session (any project)
-to reload config, or restart Claude Code. From then on, every new session
-fires the primer.
+**Run on each device** where you use Claude Code — user-level
+settings.json is per-machine.
 
-**Run on each device** where you use Claude Code in a terminal/CLI/web/IDE
-— user-level settings.json is per-machine (Claude Code doesn't sync it).
+### B. Claude Code on the Web — `cloud-setup.sh` (one-time per environment)
+
+Each Claude Code on the Web container boots fresh, so per-machine
+installs don't persist. Configure `cloud-setup.sh` as your environment's
+**setup script** in the Claude Code web UI. Every container then boots
+with the latest agent-bridge from GitHub already installed — no manual
+update step, ever.
+
+Paste this one-liner into the environment setup script field:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/getdatasurge/agent-bridge/main/cloud-setup.sh | bash
+```
+
+What it does on each container boot:
+1. Clones (or pulls) agent-bridge into `~/agent-bridge` from
+   `https://github.com/getdatasurge/agent-bridge` on `main`.
+2. Runs `./install.sh` to register the user-level hook.
+
+Every new cloud session = fresh container = latest GitHub state. The
+"updates to GitHub propagate to every console" guarantee falls out of
+this naturally.
+
+Override the source with env vars if you maintain a fork:
+`AGENT_BRIDGE_REPO`, `AGENT_BRIDGE_DIR`, `AGENT_BRIDGE_BRANCH`.
+
+### C. Per-repo committed hook — automatic via `init-project.sh`
+
+When you run `./init-project.sh <project-dir>` (see next section), it
+ALSO drops `.claude/hooks/session-start.sh` + `.claude/settings.json`
+into the project root. These commit to git. The result: every Claude
+Code session on that project — cloud OR local, with or without (A) /
+(B) installed — fires the primer because the hook lives in the repo
+itself.
+
+The dropped hook is self-contained (the primer JSON is snapshotted
+into the script at init time), so it doesn't depend on agent-bridge
+being cloned next to it. Refresh against newer primer versions by
+re-running `init-project.sh` or `update-project.sh`.
 
 ---
 
@@ -125,13 +166,18 @@ In any project you want to add coordination to:
 ./init-project.sh /path/to/your/project
 ```
 
-This drops four files at the project root:
+This drops six files into the project:
 - `AGENTS.md` — the conventions (any agent reads this first)
 - `CLAUDE.md` — one-line `@AGENTS.md` import (Claude reads this; Codex
   reads AGENTS.md directly)
 - `PRD.md` — template with sections for goals, requirements, status,
   gaps, open questions
 - `PROGRESS.md` — empty ledger with the entry template at the top
+- `.claude/hooks/session-start.sh` — self-contained SessionStart hook
+  that fires the primer for every Claude Code session on this project
+  (cloud or local), even without per-machine setup
+- `.claude/settings.json` — registers the hook (merged with any
+  existing settings.json if jq is available)
 
 Then edit `PRD.md` once to capture your actual requirements + initial
 status. Subsequent agent sessions maintain it.
