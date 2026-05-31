@@ -83,11 +83,11 @@ real-time.
 - **Gap to close:** —
 - **Open:** OQ-4 — the manifest list is heuristic; some projects (Bazel monorepos, raw C, polyglot) won't match. Acceptable tradeoff for now.
 
-### P0-9 — Per-repo SessionStart hook so cloud Claude sessions auto-prime ⚠️ Partial
-- **Acceptance:** Every repo using agent-bridge carries a committed `.claude/hooks/session-start.sh` + `.claude/settings.json` so Claude Code on the Web (which starts fresh containers per session) fires the primer without requiring a user-level install. Three pieces: (i) agent-bridge itself has these files (done), (ii) `init-project.sh` drops them into target projects when init'ing, (iii) a `cloud-setup.sh` bootstrap installs agent-bridge user-globally in cloud environments not init'd against agent-bridge.
-- **Evidence:** `.claude/hooks/session-start.sh`, `.claude/settings.json` (this commit, for agent-bridge itself).
-- **Gap to close:** (ii) and (iii) above — pending design confirmation with user before building.
-- **Open:** OQ-6 — should the dropped `.claude/hooks/session-start.sh` snapshot the primer JSON at init time (current plan; needs refresh via update-project.sh), or fetch from a canonical URL each session (always current but adds network call + offline failure mode)?
+### P0-9 — Per-repo SessionStart hook so cloud Claude sessions auto-prime ✅ Done
+- **Acceptance:** Every repo using agent-bridge carries a committed `.claude/hooks/session-start.sh` + `.claude/settings.json` so Claude Code on the Web (which starts fresh containers per session) fires the primer without requiring a user-level install. Three pieces all in: (i) agent-bridge itself has these files, (ii) `init-project.sh` drops them into target projects (with the primer JSON snapshotted inline so the dropped hook is self-contained), (iii) `cloud-setup.sh` bootstrap clones/pulls agent-bridge + runs install.sh; pasted into a Claude Code on the Web environment setup script, every container boots with the latest primer from GitHub.
+- **Evidence:** `.claude/hooks/session-start.sh`, `.claude/settings.json` (for agent-bridge itself); `init-project.sh:51-138` (per-project drop + jq-based settings merge); `cloud-setup.sh:1-65` (env-level bootstrap with branch + repo overrides).
+- **Gap to close:** —
+- **Open:** OQ-6 — snapshot-at-init vs fetch-each-session for the dropped hook's primer JSON. Currently snapshot; refresh via `update-project.sh`. Accept for now.
 
 ### P0-8 — Update propagation: upstream → installed Claude/Codex ✅ Done
 - **Acceptance:** Toolkit updates published to this repo reach existing installs without re-running install. Three mechanisms ship: (i) `install.sh` symlinks the primer so `git pull` propagates instantly; (ii) `./update.sh` does fetch + ff-pull + JSON revalidation + symlink sanity check; (iii) the primer itself emits a one-line "N commits behind upstream" note in Claude's SessionStart context when this clone is behind; (iv) Codex paste-in primer is stamped with its canonical raw-GitHub URL for re-paste; (v) `./update-project.sh <dir>` shows diffs against templates for already-init'd projects.
@@ -138,6 +138,7 @@ real-time.
 | OQ-3 | Should `init-project.sh` also drop a stub `.github/PULL_REQUEST_TEMPLATE.md` enforcing "Touches PRD rows:" / "Status:" fields? | — | No | Open |
 | OQ-4 | The "is code project?" detector in the primer is a hard-coded manifest list. Bazel monorepos, raw-C projects, and polyglot repos may fail it. Worth promoting from heuristic to explicit user opt-in/opt-out? | — | No | Open |
 | OQ-5 | Should the primer's "N commits behind upstream" lag check trigger a `git fetch` itself (adds ~100ms per session) or rely on local tracking refs (current — only accurate if the user ran `git fetch` / `update.sh` recently)? | — | No | Open |
+| OQ-6 | For the per-project dropped hook (`init-project.sh` output): snapshot primer JSON at init time (current, refresh via `update-project.sh`) vs `curl` a canonical URL each session (always current, but network dependency + offline failure mode)? | — | No | Open |
 
 ---
 
