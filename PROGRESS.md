@@ -22,6 +22,13 @@ belongs in the commit message or PR body.
 
 <!-- New entries go here, above this line. Newest on top. -->
 
+## 2026-05-31 — Self-hook: agent-bridge gets its own .claude/hooks/session-start.sh
+- **agent:** Claude (Claude Code, claude-opus-4-7)
+- **branch:** claude/funny-franklin-vxu5W    commit: pending
+- **PRD touchpoints:** P0-9 (new, partial — still need init-project.sh changes + cloud-setup.sh)
+- **summary:** agent-bridge now carries `.claude/hooks/session-start.sh` + `.claude/settings.json` so working on this very repo in Claude Code (cloud or local) fires the bundled primer at session start, regardless of user-level install. `.gitignore` excludes `.claude/settings.local.json` (harness-managed). This is the first of two layers — the second (per-init'd-project hooks + cloud env bootstrap) is pending design confirmation with the user.
+- **files:** .claude/hooks/session-start.sh, .claude/settings.json, .gitignore, PROGRESS.md, PRD.md
+
 ## 2026-05-31 — Update propagation: symlink install + update.sh + canonical Codex URL + update-project.sh
 - **agent:** Claude (Claude Code, claude-opus-4-7)
 - **branch:** claude/funny-franklin-vxu5W    commit: pending

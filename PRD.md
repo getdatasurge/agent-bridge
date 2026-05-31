@@ -83,6 +83,12 @@ real-time.
 - **Gap to close:** —
 - **Open:** OQ-4 — the manifest list is heuristic; some projects (Bazel monorepos, raw C, polyglot) won't match. Acceptable tradeoff for now.
 
+### P0-9 — Per-repo SessionStart hook so cloud Claude sessions auto-prime ⚠️ Partial
+- **Acceptance:** Every repo using agent-bridge carries a committed `.claude/hooks/session-start.sh` + `.claude/settings.json` so Claude Code on the Web (which starts fresh containers per session) fires the primer without requiring a user-level install. Three pieces: (i) agent-bridge itself has these files (done), (ii) `init-project.sh` drops them into target projects when init'ing, (iii) a `cloud-setup.sh` bootstrap installs agent-bridge user-globally in cloud environments not init'd against agent-bridge.
+- **Evidence:** `.claude/hooks/session-start.sh`, `.claude/settings.json` (this commit, for agent-bridge itself).
+- **Gap to close:** (ii) and (iii) above — pending design confirmation with user before building.
+- **Open:** OQ-6 — should the dropped `.claude/hooks/session-start.sh` snapshot the primer JSON at init time (current plan; needs refresh via update-project.sh), or fetch from a canonical URL each session (always current but adds network call + offline failure mode)?
+
 ### P0-8 — Update propagation: upstream → installed Claude/Codex ✅ Done
 - **Acceptance:** Toolkit updates published to this repo reach existing installs without re-running install. Three mechanisms ship: (i) `install.sh` symlinks the primer so `git pull` propagates instantly; (ii) `./update.sh` does fetch + ff-pull + JSON revalidation + symlink sanity check; (iii) the primer itself emits a one-line "N commits behind upstream" note in Claude's SessionStart context when this clone is behind; (iv) Codex paste-in primer is stamped with its canonical raw-GitHub URL for re-paste; (v) `./update-project.sh <dir>` shows diffs against templates for already-init'd projects.
 - **Evidence:** `install.sh:36-55`, `update.sh:1-83`, `hooks/session-start-primer.js:21-44`, `prompts/codex-primer.txt:1-5`, `update-project.sh:1-87`.
