@@ -7,16 +7,46 @@
 // gate: if PRD.md / PROGRESS.md are missing in a code project, Claude
 // alerts the user and offers options before addressing their request.
 //
+// Also: best-effort tells the user when this primer's local clone is
+// behind upstream, so toolkit updates don't go unnoticed. Cheap, no
+// network — only checks the local tracking ref.
+//
 // Output shape per the Claude Code hooks JSON contract:
 //   { hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: "..." } }
 //
-// Install: copy this file to ~/.claude/hooks/ and register it in
-// ~/.claude/settings.json (see settings/settings.json.snippet). The
-// install.sh script in the agent-bridge repo does both for you.
+// Install: install.sh symlinks this file to ~/.claude/hooks/ and
+// registers it in ~/.claude/settings.json. `git pull` in the cloned
+// agent-bridge repo (or ./update.sh) updates what runs next session.
+
+function upstreamLagNote() {
+  // Returns a one-line "N commits behind upstream" string, or null if
+  // we can't tell or there's no lag. Must never throw — the hook must
+  // always produce valid JSON for Claude Code's contract.
+  try {
+    const { execFileSync } = require("node:child_process");
+    const path = require("node:path");
+    const fs = require("node:fs");
+    const realScript = fs.realpathSync(__filename);
+    const repoDir = path.dirname(path.dirname(realScript));
+    const opts = { cwd: repoDir, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], timeout: 1000 };
+    const head = execFileSync("git", ["rev-parse", "HEAD"], opts).trim();
+    const upstream = execFileSync("git", ["rev-parse", "@{u}"], opts).trim();
+    if (!head || !upstream || head === upstream) return null;
+    const count = parseInt(execFileSync("git", ["rev-list", "--count", `${head}..${upstream}`], opts).trim(), 10);
+    if (!count) return null;
+    return `[agent-bridge update available: this clone (${repoDir}) is ${count} commit${count === 1 ? "" : "s"} behind upstream. Run \`cd ${repoDir} && ./update.sh\` to pull + validate.]`;
+  } catch {
+    return null;
+  }
+}
+
+const lag = upstreamLagNote();
+const lagPrefix = lag ? lag + "\n\n" : "";
+
 process.stdout.write(JSON.stringify({
   hookSpecificOutput: {
     hookEventName: "SessionStart",
-    additionalContext: [
+    additionalContext: lagPrefix + [
       "agent-bridge primer: this repo may be worked on by other agents (Claude sessions, Codex/Kodex) in parallel. Run this gate BEFORE addressing the user's first message:",
       "",
       "1. Check the repo root for PRD.md AND PROGRESS.md.",

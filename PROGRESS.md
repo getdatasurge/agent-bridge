@@ -22,6 +22,13 @@ belongs in the commit message or PR body.
 
 <!-- New entries go here, above this line. Newest on top. -->
 
+## 2026-05-31 — Update propagation: symlink install + update.sh + canonical Codex URL + update-project.sh
+- **agent:** Claude (Claude Code, claude-opus-4-7)
+- **branch:** claude/funny-franklin-vxu5W    commit: pending
+- **PRD touchpoints:** P0-8 (new, ✅), OQ-5 (new, open)
+- **summary:** Toolkit updates now propagate to existing installs without re-install. `install.sh` symlinks the primer (so `git pull` is enough); `update.sh` adds a validated pull; the primer itself prints "N commits behind upstream" in Claude's SessionStart context when this clone trails. Codex paste-in primer carries its own canonical raw-GitHub URL. `update-project.sh` shows template diffs for already-init'd projects, non-destructively.
+- **files:** install.sh, update.sh, update-project.sh, hooks/session-start-primer.js, prompts/codex-primer.txt, README.md, PRD.md
+
 ## 2026-05-31 — Pre-prompt gate for missing PRD/PROGRESS in existing repos
 - **agent:** Claude (Claude Code, claude-opus-4-7)
 - **branch:** claude/funny-franklin-vxu5W    commit: pending

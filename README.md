@@ -68,9 +68,11 @@ cd ~/agent-bridge
 ```
 
 What `install.sh` does:
-1. Copies `hooks/session-start-primer.js` to `~/.claude/hooks/`.
+1. **Symlinks** `hooks/session-start-primer.js` to `~/.claude/hooks/` so
+   `git pull` in this clone propagates to Claude Code instantly — no
+   re-install needed.
 2. Merges the SessionStart hook entry into `~/.claude/settings.json`
-   (backing up the original to `~/.claude/settings.json.bak`).
+   (backing up the original to `~/.claude/settings.json.bak.<timestamp>`).
 
 After install, open `/hooks` once in any Claude Code session (any project)
 to reload config, or restart Claude Code. From then on, every new session
@@ -78,6 +80,40 @@ fires the primer.
 
 **Run on each device** where you use Claude Code in a terminal/CLI/web/IDE
 — user-level settings.json is per-machine (Claude Code doesn't sync it).
+
+---
+
+## Update — pulling in upstream changes
+
+The primer itself prints a one-line "N commits behind upstream" note in
+Claude's SessionStart context when this clone is behind, so updates
+don't go unnoticed.
+
+```bash
+cd ~/agent-bridge
+./update.sh
+```
+
+What `update.sh` does:
+1. `git fetch` + `git pull --ff-only` so your clone is current.
+2. Re-validates the primer still produces valid JSON (catches breakage
+   before the next Claude session sees it).
+3. Confirms the `~/.claude/hooks/session-start-primer.js` symlink still
+   points at this clone and the hook is registered in `settings.json`.
+
+Because step 1 of `install.sh` symlinks rather than copies, plain
+`git pull` in this directory is also enough — `update.sh` is the
+"safe + validated" version.
+
+**Codex / paste-in primers** can't auto-update. The canonical URL is
+stamped at the top of `prompts/codex-primer.txt`:
+
+```
+https://raw.githubusercontent.com/getdatasurge/agent-bridge/main/prompts/codex-primer.txt
+```
+
+Re-paste from that URL when starting a new Codex session if you want
+the freshest version.
 
 ---
 
@@ -99,6 +135,20 @@ This drops four files at the project root:
 
 Then edit `PRD.md` once to capture your actual requirements + initial
 status. Subsequent agent sessions maintain it.
+
+### Refreshing a project against newer templates
+
+When the templates in this repo evolve (new sections, better wording),
+you can see the diff against an existing init'd project:
+
+```bash
+./update-project.sh /path/to/your/project
+```
+
+This shows a unified diff per file. Nothing is auto-written — you decide
+which hunks to apply. `AGENTS.md` and `CLAUDE.md` are agent-owned and
+usually safe to refresh; `PRD.md` and `PROGRESS.md` are project-owned
+state and the template diff only shows shape, not content.
 
 ---
 

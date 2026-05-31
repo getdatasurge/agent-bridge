@@ -33,13 +33,24 @@ echo "Hook script: $PRIMER_DST"
 echo "Settings:    $SETTINGS"
 echo
 
-# --- Drop the primer script --------------------------------------------------
+# --- Drop the primer (symlink so `git pull` in the clone auto-updates) -------
 mkdir -p "$HOOKS_DIR"
-cp "$PRIMER_SRC" "$PRIMER_DST"
-chmod +x "$PRIMER_DST"
-ok "✓ Primer script installed at $PRIMER_DST"
 
-# Smoke-test the script: must output valid JSON with hookSpecificOutput.
+# Wipe any existing primer (file or symlink) at the destination so we can
+# rewrite cleanly. This is what makes re-runs idempotent.
+if [[ -L "$PRIMER_DST" || -f "$PRIMER_DST" ]]; then
+  rm -f "$PRIMER_DST"
+fi
+
+# Symlink so any `git pull` in $REPO_DIR auto-updates what Claude Code
+# runs on the next SessionStart — no re-install needed. Run ./update.sh
+# from $REPO_DIR to pull + validate explicitly.
+ln -s "$PRIMER_SRC" "$PRIMER_DST"
+chmod +x "$PRIMER_SRC"
+ok "✓ Primer symlinked: $PRIMER_DST -> $PRIMER_SRC"
+ok "  (Updates: \`cd $REPO_DIR && ./update.sh\`.)"
+
+# Smoke-test through the symlink: must output valid JSON with hookSpecificOutput.
 if ! node "$PRIMER_DST" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null; then
   die "Primer script did not produce valid JSON. Aborting before touching settings.json."
 fi

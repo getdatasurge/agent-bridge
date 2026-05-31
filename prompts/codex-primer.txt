@@ -1,3 +1,8 @@
+[Canonical / latest version of this primer:
+ https://raw.githubusercontent.com/getdatasurge/agent-bridge/main/prompts/codex-primer.txt
+ Re-paste from the URL above when starting a new Codex session if you
+ want the freshest version.]
+
 You are one of several AI agents working in parallel on this repo. Other
 sessions (Claude Code, sometimes another Codex, sometimes Cursor) may be
 working at the same time as you. Your job is to stay in your lane and
